@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>1D Heat Transfer Model</title>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <a class="navbar-brand" href="#">1D Heat Transfer Model</a>
+  </nav>
+
+  <div class="container">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">1D Heat Transfer Model</h5>
+        <p>The one-dimensional transient heat conduction equation without heat generating sources is given by:</p>
+        
+        $$\rho c_p \frac{\partial T}{\partial t} = \frac{\partial}{\partial x}\left(k\frac{\partial T}{\partial x}\right)$$
+
+        <p>where $\rho$ is the density, $c_p$ heat capacity, $k$ thermal conductivity, $T$ temperature, $x$ distance, and $t$ time. If $\rho$, $c_p$ and $k$ are constant then the equation can be simplified to:</p>
+
+        $$\frac{\partial T}{\partial t} = \kappa\frac{\partial^2 T}{\partial x^2}$$
+
+        <p>The numerical solution to this equation is:</p>
+
+        $$ T_i^{n+1} = T_i^n + \kappa \Delta t\left( \frac{T_{i+1}^{n}-2T_{i}^{n}+T^{n}_{i-1}}{\Delta x^2} \right) $$
+        
+        <p>Further details of its derivation can be found <a href="1d-ht.pdf">here</a>.</p>
+
+        <p>An example of this in practice is where a thin body with thermal conductivity $\kappa$ (e.g. rod or laminate) is at a starting temperature of $T_s$, is heated at both ends at a temperature $T_b$ and insulated along its length $L$.</p>
+
+        <img src="model.png" class="img-fluid" />
+
+        <p>Below is an implementation of the numerical solution that determines the time for the body to reach the desired temperature.</p>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-12 col-md-12 mb-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Input Parameters</h5>
+            <div class="form-group row">
+              <label class="col-sm-8 col-form-label col-form-label-sm">$T_b$</label>
+              <div class="col-sm-4">
+                <input type="number" class="form-control form-control-sm" id="bT" value="1e2">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-8 col-form-label col-form-label-sm">$T_s$</label>
+              <div class="col-sm-4">
+                <input type="number" class="form-control form-control-sm" id="bsT" value="1.8e1">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-8 col-form-label col-form-label-sm">$\kappa$</label>
+              <div class="col-sm-4">
+                <input type="number" class="form-control form-control-sm" id="kappa" value="1e-8">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-8 col-form-label col-form-label-sm">$L$</label>
+              <div class="col-sm-4">
+                <input type="number" class="form-control form-control-sm" id="length" value="1e-2">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-8 col-form-label col-form-label-sm">Timeout</label>
+              <div class="col-sm-4">
+                <input type="number" class="form-control form-control-sm" id="timeout" value="1e4">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-8 col-form-label col-form-label-sm">$\Delta x$</label>
+              <div class="col-sm-4">
+                <input type="number" class="form-control form-control-sm" id="dt" value="1e0">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-8 col-form-label col-form-label-sm">Convergence Tol</label>
+              <div class="col-sm-4">
+                <input type="number" class="form-control form-control-sm" id="tol" value="1e0">
+              </div>
+            </div>
+            <hr />
+            <button class="btn btn-outline-primary" onclick="run1D()">Run Simulation</button>
+          </div><!-- /card-body -->
+        </div>
+      </div> <!-- /col -->
+
+      <div class="col-lg-12 col-md-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Results</h5>
+            <fieldset disabled>
+              <div class="form-group row">
+                <label class="col-sm-8 col-form-label">Time to converge (s)</label>
+                <div class="col-sm-4">
+                  <input type="number" class="form-control" id="convTime" value="">
+                </div>
+
+                <div id="convChart" class="mt-5" style="height: 400px; width:100%;"></div>
+
+                <div id="distChart" class="mt-5" style="height: 400px; width:100%;"></div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div> <!-- /col -->
+
+    </div> <!-- /row -->
+
+  <footer class="mb-5">
+    <hr />
+    <div class="text-center text-muted">Dr Gopsill<br/>2019
+    </div>
+  </footer>
+  </div> <!-- /container -->
+  
+</body>
+
+<!-- Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!-- Highcharts -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+<!-- KaTeX -->
+<!-- The loading of KaTeX is deferred to speed up page rendering -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+
+<!-- To automatically render math in text elements, include the auto-render extension: -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body,{delimiters: [{left: '$$', right: '$$', display: true},{left: '$', right: '$', display: false}]});"></script>
+
+<script src="./bundle.js"></script>
+</html>
