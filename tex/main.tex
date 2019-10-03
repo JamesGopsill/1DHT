@@ -33,7 +33,7 @@ If $\rho$, $c_p$ and $k$ are constant then the equation can be simplified to:
   \kappa = \frac{k}{\rho c_p}
 \end{equation}
 
-Examples of the heat equation being used in practice is where a thin body with thermal conductivity $\kappa$ (e.g.\ rod or laminate) is at a starting temperature of $T_s$, is heated at both ends at a constant temperature $T_b$ and insulated along its length $L$ so there is no heating along the orthogonal axes (\cref{fig:model}). In this situation, one might be interested in how long it will take for the body to reach $T_b$.
+An example of the heat equation in practice is where a thin body with thermal conductivity $\kappa$ (e.g.\ rod or laminate) is at a starting temperature $T_s$ and is heated at both ends at a constant temperature $T_b$ while being insulated along its length $L$ (\cref{fig:model}). In this situation, one might be interested in how long it will take for the body to reach $T_b$.
 
 \begin{figure}
   \centering
@@ -55,7 +55,7 @@ Examples of the heat equation being used in practice is where a thin body with t
   \caption{1D Heat Model}\label{fig:model}
 \end{figure}
 
-We cen solve this numerically be discretising the continuous derivatives ($\partial t, \partial x$) in \cref{equ:1d-equation} using finite difference methods. Lets first look at the time derivative $\frac{\partial T}{\partial t}$, which can be approximated using the forward finite difference approximation.
+We cen solve this numerically by discretising the continuous derivatives ($\partial t, \partial x$) in \cref{equ:1d-equation} using finite difference methods. Lets first look at the time derivative $\frac{\partial T}{\partial t}$, which can be approximated using the forward finite difference approximation.
 
 \begin{equation}
   \frac{\partial T}{\partial t} \approx \frac{ T^{n+1}_{i}-T^{n}_{i} }{ T^{n+1}-t^{n} } = \frac{ T^{n+1}_{i}-T^{n}_{i} }{ \Delta t }
@@ -64,7 +64,7 @@ We cen solve this numerically be discretising the continuous derivatives ($\part
 
 \noindent where $n$ is a step in time and $i$ is a point along the discretised domain.
 
-Second, we turn our attention to the spatial derivative $\frac{\partial^2 T}{\partial x^2}$, which and be approximated using central difference approximation.
+Second, we turn our attention to the spatial derivative $\frac{\partial^2 T}{\partial x^2}$, which can be approximated using the central difference approximation.
 
 \begin{equation}
   \begin{split}
